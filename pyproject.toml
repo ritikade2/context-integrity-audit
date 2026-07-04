@@ -32,7 +32,7 @@ dependencies = []
 dev = ["pytest==8.2.0"]
 
 [project.scripts]
-context-audit = "src.context_integrity.cli:main"
+context-audit = "context_integrity.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/ritikade2/context-integrity-audit"

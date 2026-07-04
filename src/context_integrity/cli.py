@@ -9,7 +9,7 @@ Usage:
 import argparse
 import os
 import sys
-
+from context_integrity.modules.context_staleness import REFERENCE_DATE
 from context_integrity.evaluator import evaluate_file, evaluate_row
 from context_integrity.remediation import get_recommendations
 
@@ -37,7 +37,7 @@ def _demo(_args) -> int:
         if not os.path.exists(path):
             print(f"{name:<20}  file not found: {path}", file=sys.stderr)
             continue
-        result = evaluate_file(path)
+        result = evaluate_file(path, now=REFERENCE_DATE)
         vc = result["verdict_counts"]
         print(
             f"{name:<20} {result['average_score']:>10.1f} "

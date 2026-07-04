@@ -11,7 +11,7 @@ Mismatch - full penalty. The agent is operating on a stale or wrong understandin
 Missing  -> small precautionary penalty.
 """
 
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 WEIGHT = 0.15
 

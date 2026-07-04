@@ -8,9 +8,9 @@ lineage breaks, schema mismatches, reproducibility risks, and policy gaps.
 Author: Ritika De
 """
 
-from src.context_integrity.evaluator import evaluate_row, evaluate_file
-from src.context_integrity.remediation import get_recommendations
-from src.context_integrity.scoring import IntegrityScore, Component, Verdict
+from context_integrity.evaluator import evaluate_row, evaluate_file
+from context_integrity.remediation import get_recommendations
+from context_integrity.scoring import IntegrityScore, Component, Verdict
 
 __version__ = "0.1.0"
 __author__ = "Ritika De"

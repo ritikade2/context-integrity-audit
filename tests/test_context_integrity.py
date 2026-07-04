@@ -4,17 +4,17 @@ Run with: pytest tests/
 """
 
 import pytest
-from src.context_integrity.scoring import score_components, Component, Verdict
-from src.context_integrity.contract import default_contract
-from src.context_integrity.evaluator import evaluate_row, evaluate_file
-from src.context_integrity.remediation import get_recommendations
-from src.context_integrity.modules.context_staleness import audit as stale_audit, REFERENCE_DATE
-from src.context_integrity.modules.retrieval_boundary import audit as boundary_audit
-from src.context_integrity.modules.grounding_fidelity import audit as grounding_audit
-from src.context_integrity.modules.lineage_traceability import audit as lineage_audit
-from src.context_integrity.modules.schema_consistency import audit as schema_audit
-from src.context_integrity.modules.reproducibility import audit as repro_audit
-from src.context_integrity.modules.policy_alignment import audit as policy_audit
+from context_integrity.scoring import score_components, Component, Verdict
+from context_integrity.contract import default_contract
+from context_integrity.evaluator import evaluate_row, evaluate_file
+from context_integrity.remediation import get_recommendations
+from context_integrity.modules.context_staleness import audit as stale_audit, REFERENCE_DATE
+from context_integrity.modules.retrieval_boundary import audit as boundary_audit
+from context_integrity.modules.grounding_fidelity import audit as grounding_audit
+from context_integrity.modules.lineage_traceability import audit as lineage_audit
+from context_integrity.modules.schema_consistency import audit as schema_audit
+from context_integrity.modules.reproducibility import audit as repro_audit
+from context_integrity.modules.policy_alignment import audit as policy_audit
 
 
 # Shared test rows

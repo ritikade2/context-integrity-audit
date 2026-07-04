@@ -10,7 +10,7 @@ False - lineage is broken, full penalty.
 Missing - cannot determine, small precautionary penalty applied.
 """
 
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 WEIGHT = 0.15
 

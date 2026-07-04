@@ -9,7 +9,7 @@ authorized to access. Violations are graded by severity:
 The BLOCKED flag is returned separately so the evaluator can force a
 BLOCKED verdict regardless of the overall score.
 """
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 WEIGHT = 0.2
 

@@ -10,8 +10,8 @@ import argparse
 import os
 import sys
 
-from src.context_integrity.evaluator import evaluate_file, evaluate_row
-from src.context_integrity.remediation import get_recommendations
+from context_integrity.evaluator import evaluate_file, evaluate_row
+from context_integrity.remediation import get_recommendations
 
 
 DEMO_SCENARIOS = [

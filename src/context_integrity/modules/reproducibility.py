@@ -10,7 +10,7 @@ Penalty is scaled but capped lower than grounding_fidelity because
 reproducibility risk is less severe than outright hallucination.
 """
 
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 WEIGHT = 0.10
 

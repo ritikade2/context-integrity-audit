@@ -16,7 +16,7 @@ retrieved context. A high penalty means the output diverges significantly
 from what was retrieved -- a signal of hallucination or fabrication.
 """
 import re
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 WEIGHT = 0.10
 

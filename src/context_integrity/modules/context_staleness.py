@@ -7,7 +7,7 @@ Penalty increases linearly between 2 and 7 days, and maxes out at 7+ days.
 """
 
 from datetime import datetime
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 FRESHNESS_THRESHOLD_DAYS = 2.0
 MAX_STALENESS_DAYS = 7.0

@@ -5,7 +5,7 @@ Takes an IntegrityScore and returns a list of specific, actionable
 fix recommendations for any dimension with a non-zero penalty.
 """
 
-from src.context_integrity.scoring import IntegrityScore
+from context_integrity.scoring import IntegrityScore
 
 
 REMEDIATION_MAP = {

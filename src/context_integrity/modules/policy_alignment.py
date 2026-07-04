@@ -10,7 +10,7 @@ masking_required=True, masking_applied=False - violation, penalty 1.0
 Missing values - small precautionary penalty
 """
 
-from src.context_integrity.scoring import Component
+from context_integrity.scoring import Component
 
 WEIGHT = 0.10
 

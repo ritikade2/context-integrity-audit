@@ -1,0 +1,53 @@
+"""
+Audit Dimension 1: Context Staleness
+
+Checks whether the information the agent retrieved was current at the time
+of the interaction. A source validated within 2 days is considered fresh.
+Penalty increases linearly between 2 and 7 days, and maxes out at 7+ days.
+"""
+
+from datetime import datetime
+from src.context_integrity.scoring import Component
+
+FRESHNESS_THRESHOLD_DAYS = 2.0
+MAX_STALENESS_DAYS = 7.0
+WEIGHT = 0.20
+
+def audit(row: dict) -> Component:
+    """
+    Compute the staleness penalty for one interaction row.
+    row: one dictionary from the CSV, representing one agent interaction.
+    Returns a Component with the penalty and a short explanation.
+    """
+    raw = row.get("source_last_validated", "")
+    
+    #If the timestamp is missing or parseable, treat a maximally stale.
+    try:
+        validated_at = datetime.strptime(raw, "%Y-%m-%d %H:%M:%S")
+    except (ValueError, TypeError):
+        return Component(
+            name="context_staleness",
+            weight=WEIGHT,
+            penalty=1.0,
+            detail="source_last_validated is missing or unparseable",
+        )
+    now = datetime(2026, 6, 21, 12, 0, 0)
+    age_days = (now - validated_at).total_seconds() / (60 * 60 * 24)
+    if age_days <= FRESHNESS_THRESHOLD_DAYS:
+        penalty = 0.0
+        detail = f"fresh ({age_days:.1f} days old)"
+    elif age_days >= MAX_STALENESS_DAYS:
+        penalty = 1.0
+        detail = f"maximally stale ({age_days:.1f} days old, threshold {MAX_STALENESS_DAYS} days)"
+    else:
+        #Linear scale between the 2 thresholds
+        penalty = (age_days - FRESHNESS_THRESHOLD_DAYS) / (MAX_STALENESS_DAYS - FRESHNESS_THRESHOLD_DAYS)
+        penalty = round(penalty, 4)
+        detail = f"stale ({age_days:.1f} days old)"
+    
+    return Component(
+        name="context_staleness",
+        weight=WEIGHT,
+        penalty=penalty,
+        detail=detail,
+    )

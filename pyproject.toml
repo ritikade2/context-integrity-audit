@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "context-integrity-audit"
+version = "0.1.0"
+description = "A governance audit framework for AI agents operating over enterprise data. Detects staleness, retrieval violations, grounding failures, lineage breaks, schema mismatches, and policy gaps."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Ritika De" }]
+keywords = [
+    "ai-governance",
+    "context-integrity",
+    "enterprise-ai",
+    "data-quality",
+    "reliability",
+    "audit",
+    "llm",
+    "agents",
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest==8.2.0"]
+
+[project.scripts]
+context-audit = "src.context_integrity.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ritikade2/context-integrity-audit"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/context_integrity"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

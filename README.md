@@ -116,7 +116,7 @@ To score your own data, your CSV must include these columns:
 pytest tests/ -v
 ```
 
-26 tests, all passing.
+28 tests, all passing.
 
 ## How This Fits Into a Broader Reliability Stack
 

@@ -28,7 +28,7 @@ def audit(row: dict) -> Component:
         return Component(
             name="reproducibility",
             weight=WEIGHT,
-            penalty=0.0,
+            penalty=0.3,
             detail="output_matches_source missing, reproducibility not measured",
         )
     match_score = max(0.0, min(1.0, match_score))

@@ -49,22 +49,43 @@ def _numeric_inconsistency(output: str, source: str) -> float:
     return len(unsupported) / len(output_nums)
 
 def _verbosity_ratio(output: str, source: str) -> float:
-    """Output length relative to source, saturing at 2x."""
-    output_len = len(_WORD.findall(output.lower()))
-    source_len = len(_WORD.findall(source.lower()))
-    if output_len == 0 or source_len == 0:
+    """Penalizes output that is much longer than source without adding grounded content."""
+    output_words = _content_words(output)
+    source_words = _content_words(source)
+    if not output_words or not source_words:
         return 0.0
-    return min(1.0, (output_len / source_len) / 2.0)
+    #Only penalize words in the output that are NOT in the source.
+    #A longer answer that stays grounded in the source is fine.
+    ungrounded_words = output_words - source_words
+    if not ungrounded_words:
+        return 0.0
+    ungrounded_ratio = len(ungrounded_words) / len(output_words)
+    length_ratio = len(output_words) / len(source_words)
+    #Only penalize when output is both longer AND mostly ungrounded
+    if length_ratio > 2.0 and ungrounded_ratio > 0.5:
+        return min(1.0, (length_ratio - 2.0) / 2.0)
+    return 0.0
+
 
 def _question_echo(output: str, query: str) -> float:
-    """Fraction of query content words echoed back in the output."""
+    """Penalizes output that restates the query without adding grounded content."""
     if not query or not query.strip():
         return 0.0
     query_words = _content_words(query)
     if not query_words:
         return 0.0
-    echoed = query_words & _content_words(output)
-    return len(echoed) / len(query_words)
+    output_words = _content_words(output)
+    source_overlap = query_words & output_words
+    #Only penalize if the output is mostly just echoing the query
+    #and not adding any new grounded content beyond query words
+    echo_rate = len(source_overlap) / len(query_words)
+    output_beyond_query = output_words - query_words
+    #If the output adds substantial content beyond the query, no penalty
+    if len(output_beyond_query) > len(query_words):
+        return 0.0
+    #Only penalize when output is almost entirely query words
+    return max(0.0, echo_rate - 0.5) * 2.0
+    
 
 def audit(row: dict) -> Component:
     """
@@ -81,7 +102,7 @@ def audit(row: dict) -> Component:
         return Component(
             name="grounding_fidelity",
             weight=WEIGHT,
-            penalty=0.0,
+            penalty=0.3,
             detail="output_claims or retrieved_content missing, grounding not measured",
         )
     s1 = _unknown_word_rate(output, source)

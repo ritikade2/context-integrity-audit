@@ -156,7 +156,8 @@ def test_grounding_fidelity_well_grounded():
 def test_grounding_fidelity_missing_content():
     row = {"output_claims": "", "retrieved_content": "", "query": ""}
     result = grounding_audit(row)
-    assert result.penalty == 0.0
+    assert result.penalty == 0.3
+    assert "missing" in result.detail
 
 
 def test_lineage_documented():

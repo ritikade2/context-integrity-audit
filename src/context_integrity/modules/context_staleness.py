@@ -12,16 +12,23 @@ from src.context_integrity.scoring import Component
 FRESHNESS_THRESHOLD_DAYS = 2.0
 MAX_STALENESS_DAYS = 7.0
 WEIGHT = 0.20
+REFERENCE_DATE = datetime(2026, 6, 21, 12, 0, 0)
 
-def audit(row: dict) -> Component:
+
+def audit(row: dict, now: datetime = None) -> Component:
     """
     Compute the staleness penalty for one interaction row.
     row: one dictionary from the CSV, representing one agent interaction.
+    now: reference datetime to measure staleness against. Defaults to
+         datetime.now() for real-world use. Pass REFERENCE_DATE when
+         scoring synthetic demo data so results stay reproducible.
     Returns a Component with the penalty and a short explanation.
     """
+    if now is None:
+        now = datetime.now()
+
     raw = row.get("source_last_validated", "")
-    
-    #If the timestamp is missing or parseable, treat a maximally stale.
+
     try:
         validated_at = datetime.strptime(raw, "%Y-%m-%d %H:%M:%S")
     except (ValueError, TypeError):
@@ -29,10 +36,20 @@ def audit(row: dict) -> Component:
             name="context_staleness",
             weight=WEIGHT,
             penalty=1.0,
-            detail="source_last_validated is missing or unparseable",
+            detail="source_last_validated missing or unparseable",
         )
-    now = datetime(2026, 6, 21, 12, 0, 0)
-    age_days = (now - validated_at).total_seconds() / (60 * 60 * 24)
+
+    age_days = (now - validated_at).total_seconds() / 86400.0
+
+    # Future-dated sources score as fresh rather than negative age
+    if age_days < 0:
+        return Component(
+            name="context_staleness",
+            weight=WEIGHT,
+            penalty=0.0,
+            detail=f"source dated in the future ({abs(age_days):.1f} days ahead), treated as fresh",
+        )
+
     if age_days <= FRESHNESS_THRESHOLD_DAYS:
         penalty = 0.0
         detail = f"fresh ({age_days:.1f} days old)"
@@ -40,11 +57,10 @@ def audit(row: dict) -> Component:
         penalty = 1.0
         detail = f"maximally stale ({age_days:.1f} days old, threshold {MAX_STALENESS_DAYS} days)"
     else:
-        #Linear scale between the 2 thresholds
         penalty = (age_days - FRESHNESS_THRESHOLD_DAYS) / (MAX_STALENESS_DAYS - FRESHNESS_THRESHOLD_DAYS)
         penalty = round(penalty, 4)
         detail = f"stale ({age_days:.1f} days old)"
-    
+
     return Component(
         name="context_staleness",
         weight=WEIGHT,

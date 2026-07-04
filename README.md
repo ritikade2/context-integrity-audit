@@ -134,7 +134,7 @@ This framework is the third layer of a three-part reliability stack:
 ## Author
 
 **Ritika De**  
-Senior Analytics Engineer | Fractal Analytics  
+Senior Analytics Consultant | Fractal Analytics
 [github.com/ritikade2](https://github.com/ritikade2)
 
 ## License

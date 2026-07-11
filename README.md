@@ -39,28 +39,25 @@ a final 0–100 score with a verdict:
 
 | Scenario | Avg Score | Verdict |
 |---|---|---|
-| Baseline | 96.8 | All COMPLIANT |
-| Context Drift | 68.1 | All REVIEW REQUIRED |
-| Mixed Failure | 60.6 | REVIEW REQUIRED / NON-COMPLIANT |
-| Severe | 44.8 | NON-COMPLIANT + 46 BLOCKED |
+| Baseline | 98.3 | All COMPLIANT |
+| Context Drift | 69.6 | All REVIEW REQUIRED |
+| Mixed Failure | 62.1 | REVIEW REQUIRED / NON-COMPLIANT |
+| Severe | 46.3 | NON-COMPLIANT + 46 BLOCKED |
 
 ## Remediation
 
 Every failing dimension produces a specific, actionable recommendation — not 
 just a score. For example:
-'''
+
+```
 [RETRIEVAL_BOUNDARY] CRITICAL: Revoke agent access and audit all outputs
 from this session. PII data was accessed without authorization.
 [SCHEMA_CONSISTENCY] Halt agent queries until schema is synchronized.
 Mismatch between agent schema and production schema will produce incorrect
 field mappings and query results.
-'''
+```
 
 ## Install
-
-```bash
-pip install context-integrity-audit
-```
 
 Development install:
 
@@ -76,19 +73,19 @@ pip install -e ".[dev]"
 Run the bundled offline demo across all four scenarios:
 
 ```bash
-python3 -m src.context_integrity.cli demo
+python3 -m context_integrity.cli demo
 ```
 
 Score your own agent log file (CSV with the required columns):
 
 ```bash
-python3 -m src.context_integrity.cli run path/to/your_logs.csv
+python3 -m context_integrity.cli run path/to/your_logs.csv
 ```
 
 Score one example interaction:
 
 ```bash
-python3 -m src.context_integrity.cli check
+python3 -m context_integrity.cli check
 ```
 
 ## Required CSV Columns

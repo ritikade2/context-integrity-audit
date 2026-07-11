@@ -41,4 +41,4 @@ Homepage = "https://github.com/ritikade2/context-integrity-audit"
 packages = ["src/context_integrity"]
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = ["src"]

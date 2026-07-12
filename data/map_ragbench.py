@@ -117,6 +117,6 @@ def convert_subset(subset: str, split: str = "test") -> None:
 
 
 if __name__ == "__main__":
-    convert_subset("cuad")
-    convert_subset("finqa")
+    convert_subset("cuad", split="train+validation+test")
+    convert_subset("finqa", split="train+validation+test")
     print("done.")

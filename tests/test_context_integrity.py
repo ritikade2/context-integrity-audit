@@ -15,6 +15,7 @@ from context_integrity.modules.lineage_traceability import audit as lineage_audi
 from context_integrity.modules.schema_consistency import audit as schema_audit
 from context_integrity.modules.reproducibility import audit as repro_audit
 from context_integrity.modules.policy_alignment import audit as policy_audit
+from context_integrity.checks.pii_scanner import PIIScannerCheck
 
 
 # Shared test rows
@@ -164,10 +165,12 @@ def test_lineage_documented():
     assert lineage_audit({"lineage_documented": "True"}).penalty == 0.0
     assert lineage_audit({"lineage_documented": "False"}).penalty == 1.0
 
+
 def test_lineage_missing_value():
     result = lineage_audit({"lineage_documented": None})
     assert result.penalty == 0.3
     assert "missing" in result.detail
+
 
 def test_schema_consistent():
     row = {"current_schema_version": "v4", "agent_schema_version": "v4"}
@@ -198,6 +201,7 @@ def test_clean_row_is_compliant():
     result = evaluate_row(CLEAN_ROW, now=REFERENCE_DATE)
     assert result.verdict == Verdict.COMPLIANT
     assert result.score >= 80.0
+
 
 def test_violated_row_is_blocked():
     result = evaluate_row(VIOLATED_ROW, now=REFERENCE_DATE)
@@ -241,3 +245,39 @@ def test_violated_row_has_remediation():
     recs = get_recommendations(result)
     assert len(recs) > 1
     assert any("RETRIEVAL_BOUNDARY" in r for r in recs)
+
+#Pluggable checks
+def test_pii_scanner_detects_ssn():
+    check = PIIScannerCheck()
+    row = {"output_claims": "Customer John Smith SSN 123-45-6789 has balance due."}
+    result = check.audit(row)
+    assert result.penalty == 0.4
+    assert "ssn" in result.detail
+
+def test_pii_scanner_clean_output():
+    check = PIIScannerCheck()
+    row = {"output_claims": "Total revenue for Q1 was 4.2 million dollars."}
+    result = check.audit(row)
+    assert result.penalty == 0.0
+
+def test_extra_check_plugs_into_evaluator():
+    row = {
+        "source_last_validated": "2026-06-20 12:00:00",
+        "source_classification": "INTERNAL",
+        "agent_access_level": "INTERNAL",
+        "output_claims": "Customer John Smith SSN 123-45-6789 has balance due.",
+        "retrieved_content": "Account balance data is available for authorized users only.",
+        "query": "What is the account balance?",
+        "current_schema_version": "v4",
+        "agent_schema_version": "v4",
+        "lineage_documented": "True",
+        "output_matches_source": "0.95",
+        "policy_masking_required": "True",
+        "policy_masking_applied": "True",
+    }
+    # Without PII scanner - masking says True so policy passes
+    result_default = evaluate_row(row, now=REFERENCE_DATE)
+    # With PII scanner - independently detects SSN in output
+    result_with_pii = evaluate_row(row, now=REFERENCE_DATE, extra_checks=[PIIScannerCheck()])
+    # PII scanner should catch what policy_alignment missed
+    assert result_with_pii.score < result_default.score
